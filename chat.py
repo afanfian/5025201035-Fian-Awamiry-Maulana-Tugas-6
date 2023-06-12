@@ -1,10 +1,47 @@
-import sys
+import base64
 import os
+from os.path import join, dirname, realpath
 import json
 import uuid
 import logging
+import threading 
+import socket
+import shutil
 from queue import  Queue
+from datetime import datetime
 
+class RealmThreadCommunication(threading.Thread):
+    def __init__(self, chats, realm_dest_address, realm_dest_port):
+        self.chats = chats
+        self.chat = {}
+        self.realm_dest_address = realm_dest_address
+        self.realm_dest_port = realm_dest_port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((self.realm_dest_address, self.realm_dest_port))
+        threading.Thread.__init__(self)
+    def sendstring(self, string):
+        try:
+            self.sock.sendall(string.encode())
+            receivedmsg = ""
+            while True:
+                data = self.sock.recv(2048)
+                print("diterima dari server", data)
+                if (data):
+                    receivedmsg = "{}{}" . format(receivedmsg, data.decode())
+                    if receivedmsg[-4:]=='\r\n\r\n':
+                        print("end of string")
+                        return json.loads(receivedmsg)
+        except:
+            self.sock.close()
+            return { 'status' : 'ERROR', 'message' : 'Gagal'}
+    def put(self, message):
+        dest = message['msg_to']
+        try:
+            self.chat[dest].put(message)
+        except KeyError:
+            self.chat[dest]=Queue()
+            self.chat[dest].put(message)
+            
 class Chat:
 	def __init__(self):
 		self.sessions={}
