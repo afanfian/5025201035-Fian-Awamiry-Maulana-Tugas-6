@@ -58,6 +58,7 @@ class Chat:
 				password=j[2].strip()
 				logging.warning("AUTH: auth {} {}" . format(username,password))
 				return self.autentikasi_user(username,password)
+			# Dalam satu server
 			elif (command=='send'):
 				sessionid = j[1].strip()
 				usernameto = j[2].strip()
@@ -81,6 +82,12 @@ class Chat:
 				usernamefrom = self.sessions[sessionid]['username']
 				logging.warning("SEND: session {} send message from {} to {}" . format(sessionid, usernamefrom,usernamesto))
 				return self.send_group_message(sessionid,usernamefrom,usernamesto,message)
+			# Dalam beda server
+			elif (command=='addrealm'):
+				realmid = j[1].strip()
+				realm_address = j[2].strip()
+				realm_port = j[3].strip()
+				return self.add_realm(realmid, realm_address, realm_port)
 			else:
 				return {'status': 'ERROR', 'message': '**Protocol Tidak Benar'}
 		except KeyError:
@@ -99,6 +106,7 @@ class Chat:
 		if (username not in self.users):
 			return False
 		return self.users[username]
+	# Dalam satu server
 	def send_message(self,sessionid,username_from,username_dest,message):
 		if (sessionid not in self.sessions):
 			return {'status': 'ERROR', 'message': 'Session Tidak Ditemukan'}
@@ -155,6 +163,7 @@ class Chat:
 				inqueue_receiver[username_from]=Queue()
 				inqueue_receiver[username_from].put(message)
 		return {'status': 'OK', 'message': 'Message Sent'}
+	# Dalam satu server
 	def add_realm(self, realm_id, realm_dest_address, realm_dest_port, data):
 		j = data.split()
 		j[0] = "recvrealm"
