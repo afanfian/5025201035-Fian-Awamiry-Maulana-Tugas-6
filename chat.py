@@ -104,6 +104,26 @@ class Chat:
 				usernamefrom = self.sessions[sessionid]['username']
 				logging.warning("SENDPRIVATEREALM: session {} send message from {} to {} in realm {}".format(sessionid, usernamefrom, usernameto, realm_id))
 				return self.send_realm_message(sessionid, realm_id, usernamefrom, usernameto, message, data)
+			elif (command == 'recvrealmprivatemsg'):
+				usernamefrom = j[1].strip()
+				realm_id = j[2].strip()
+				usernameto = j[3].strip()
+				message = ""
+				for w in j[4:]:
+					message = "{} {}".format(message, w)
+				print(message)
+				logging.warning("RECVREALMPRIVATEMSG: recieve message from {} to {} in realm {}".format( usernamefrom, usernameto, realm_id))
+				return self.recv_realm_message(realm_id, usernamefrom, usernameto, message, data)
+			elif (command == 'sendgrouprealm'):
+				sessionid = j[1].strip()
+				realm_id = j[2].strip()
+				usernamesto = j[3].strip().split(',')
+				message = ""
+				for w in j[4:]:
+					message = "{} {}".format(message, w)
+				usernamefrom = self.sessions[sessionid]['username']
+				logging.warning("SENDGROUPREALM: session {} send message from {} to {} in realm {}".format(sessionid, usernamefrom, usernamesto, realm_id))
+				return self.send_group_realm_message(sessionid, realm_id, usernamefrom,usernamesto, message,data)
 			else:
 				return {'status': 'ERROR', 'message': '**Protocol Tidak Benar'}
 		except KeyError:
