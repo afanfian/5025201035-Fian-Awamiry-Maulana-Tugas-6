@@ -72,6 +72,15 @@ class Chat:
 				username = self.sessions[sessionid]['username']
 				logging.warning("INBOX: {}" . format(sessionid))
 				return self.get_inbox(username)
+			elif (command=='sendgroup'):
+				sessionid = j[1].strip()
+				usernamesto = j[2].strip().split(',')
+				message=""
+				for w in j[3:]:
+					message="{} {}" . format(message,w)
+				usernamefrom = self.sessions[sessionid]['username']
+				logging.warning("SEND: session {} send message from {} to {}" . format(sessionid, usernamefrom,usernamesto))
+				return self.send_group_message(sessionid,usernamefrom,usernamesto,message)
 			else:
 				return {'status': 'ERROR', 'message': '**Protocol Tidak Benar'}
 		except KeyError:
@@ -113,7 +122,6 @@ class Chat:
 			inqueue_receiver[username_from]=Queue()
 			inqueue_receiver[username_from].put(message)
 		return {'status': 'OK', 'message': 'Message Sent'}
-
 	def get_inbox(self,username):
 		s_fr = self.get_user(username)
 		incoming = s_fr['incoming']
@@ -122,8 +130,31 @@ class Chat:
 			msgs[users]=[]
 			while not incoming[users].empty():
 				msgs[users].append(s_fr['incoming'][users].get_nowait())
-			
 		return {'status': 'OK', 'messages': msgs}
+	def send_group_message(self, sessionid, username_from, usernames_dest, message):
+		if (sessionid not in self.sessions):
+			return {'status': 'ERROR', 'message': 'Session Tidak Ditemukan'}
+		s_fr = self.get_user(username_from)
+		if s_fr is False:
+			return {'status': 'ERROR', 'message': 'User Tidak Ditemukan'}
+		for username_dest in usernames_dest:
+			s_to = self.get_user(username_dest)
+			if s_to is False:
+				continue
+			message = {'msg_from': s_fr['nama'], 'msg_to': s_to['nama'], 'msg': message}
+			outqueue_sender = s_fr['outgoing']
+			inqueue_receiver = s_to['incoming']
+			try:    
+				outqueue_sender[username_from].put(message)
+			except KeyError:
+				outqueue_sender[username_from]=Queue()
+				outqueue_sender[username_from].put(message)
+			try:
+				inqueue_receiver[username_from].put(message)
+			except KeyError:
+				inqueue_receiver[username_from]=Queue()
+				inqueue_receiver[username_from].put(message)
+		return {'status': 'OK', 'message': 'Message Sent'}
 
 
 if __name__=="__main__":
