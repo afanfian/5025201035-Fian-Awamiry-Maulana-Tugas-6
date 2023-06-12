@@ -1,14 +1,10 @@
-import base64
-import os
-from os.path import join, dirname, realpath
+
 import json
 import uuid
 import logging
 import threading 
 import socket
-import shutil
 from queue import  Queue
-from datetime import datetime
 
 class RealmThreadCommunication(threading.Thread):
     def __init__(self, chats, realm_dest_address, realm_dest_port):
