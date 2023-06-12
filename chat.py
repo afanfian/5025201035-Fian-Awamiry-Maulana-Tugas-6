@@ -252,6 +252,18 @@ class Chat:
 		message = { 'msg_from': s_fr['nama'], 'msg_to': s_to['nama'], 'msg': message }
 		self.realms[realm_id].put(message)
 		return {'status': 'OK', 'message': 'Message Sent to Realm'}
+	def get_realm_chat(self, realmid, username):
+		s_fr = self.get_user(username)
+		msgs = []
+		while not self.realms[realmid].chat[s_fr['nama']].empty():
+			msgs.append(self.realms[realmid].chat[s_fr['nama']].get_nowait())
+		return {'status': 'OK', 'messages': msgs}
+	def get_realm_inbox(self, username,realmid):
+		if (realmid not in self.realms):
+			return {'status': 'ERROR', 'message': 'Realm Tidak Ditemukan'}
+		s_fr = self.get_user(username)
+		result = self.realms[realmid].sendstring("getrealmchat {} {}\r\n".format(realmid, username))
+		return result
 	def send_group_realm_message(self, sessionid, realm_id, username_from, usernames_to, message, data):
 		if (sessionid not in self.sessions):
 			return {'status': 'ERROR', 'message': 'Session Tidak Ditemukan'}
