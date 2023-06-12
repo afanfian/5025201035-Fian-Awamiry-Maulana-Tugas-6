@@ -260,6 +260,15 @@ class Chat:
 		data +="\r\n"
 		self.realms[realm_id].sendstring(data)
 		return {'status': 'OK', 'message': 'Message Sent to Group in Realm'}
+	def recv_group_realm_message(self, realm_id, username_from, usernames_to, message, data):
+		if realm_id not in self.realms:
+			return {'status': 'ERROR', 'message': 'Realm Tidak Ditemukan'}
+		s_fr = self.get_user(username_from)
+		for username_to in usernames_to:
+			s_to = self.get_user(username_to)
+			message = {'msg_from': s_fr['nama'], 'msg_to': s_to['nama'], 'msg': message }
+			self.realms[realm_id].put(message)
+		return {'status': 'OK', 'message': 'Message Sent to Group in Realm'}
 if __name__=="__main__":
 	j = Chat()
 	sesi = j.proses("auth messi surabaya")
