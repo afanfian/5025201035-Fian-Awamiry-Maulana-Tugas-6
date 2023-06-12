@@ -124,6 +124,15 @@ class Chat:
 				usernamefrom = self.sessions[sessionid]['username']
 				logging.warning("SENDGROUPREALM: session {} send message from {} to {} in realm {}".format(sessionid, usernamefrom, usernamesto, realm_id))
 				return self.send_group_realm_message(sessionid, realm_id, usernamefrom,usernamesto, message,data)
+			elif (command == 'recvrealmgroupmsg'):
+				usernamefrom = j[1].strip()
+				realm_id = j[2].strip()
+				usernamesto = j[3].strip().split(',')
+				message = ""
+				for w in j[4:]:
+					message = "{} {}".format(message, w) 
+				logging.warning("RECVGROUPREALM: send message from {} to {} in realm {}".format(usernamefrom, usernamesto, realm_id))
+				return self.recv_group_realm_message(realm_id, usernamefrom,usernamesto, message,data)
 			else:
 				return {'status': 'ERROR', 'message': '**Protocol Tidak Benar'}
 		except KeyError:
