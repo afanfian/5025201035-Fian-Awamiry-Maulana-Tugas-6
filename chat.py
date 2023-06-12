@@ -114,6 +114,17 @@ class Chat:
 				print(message)
 				logging.warning("RECVREALMPRIVATEMSG: recieve message from {} to {} in realm {}".format( usernamefrom, usernameto, realm_id))
 				return self.recv_realm_message(realm_id, usernamefrom, usernameto, message, data)
+			elif (command == 'getrealmchat'):
+				realmid = j[1].strip()
+				username = j[2].strip()
+				logging.warning("GETREALMCHAT: from realm {}".format(realmid))
+				return self.get_realm_chat(realmid, username)
+			elif (command == 'getrealminbox'):
+				sessionid = j[1].strip()
+				realmid = j[2].strip()
+				username = self.sessions[sessionid]['username']
+				logging.warning("GETREALMINBOX: {} from realm {}".format(sessionid, realmid))
+				return self.get_realm_inbox(username, realmid)
 			elif (command == 'sendgrouprealm'):
 				sessionid = j[1].strip()
 				realm_id = j[2].strip()
