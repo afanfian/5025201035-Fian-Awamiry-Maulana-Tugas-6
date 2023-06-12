@@ -175,7 +175,9 @@ class Chat:
 		self.realms[realm_id] = RealmThreadCommunication(self, realm_dest_address, realm_dest_port)
 		result = self.realms[realm_id].sendstring(data)
 		return result
-
+	def recv_realm(self, realm_id, realm_dest_address, realm_dest_port, data):
+		self.realms[realm_id] = RealmThreadCommunication(self, realm_dest_address, realm_dest_port)
+		return {'status':'OK'}
 if __name__=="__main__":
 	j = Chat()
 	sesi = j.proses("auth messi surabaya")
