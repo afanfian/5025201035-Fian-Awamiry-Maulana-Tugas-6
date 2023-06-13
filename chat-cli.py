@@ -40,6 +40,13 @@ class ChatClient:
                 realm_address = j[2].strip()
                 realm_port = j[3].strip()
                 return self.add_realm(realmid, realm_address, realm_port)
+            elif (command == 'sendprivaterealm'):
+                realmid = j[1].strip()
+                username_to = j[2].strip()
+                message = ""
+                for w in j[3:]:
+                    message = "{} {}".format(message, w)
+                return self.send_realm_message(realmid, username_to, message)
             else:
                 return "*Maaf, command tidak benar"
         except IndexError:
@@ -106,7 +113,15 @@ class ChatClient:
             return "Realm {} added" . format(realmid)
         else:
             return "Error, {}" . format(result['message'])
-
+    def send_realm_message(self, realmid, username_to, message):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="sendprivaterealm {} {} {} {}\r\n" . format(self.tokenid, realmid, username_to, message)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "Message sent to realm {}".format(realmid)
+        else:
+            return "Error, {}".format(result['message'])
 if __name__=="__main__":
     cc = ChatClient()
     while True:
