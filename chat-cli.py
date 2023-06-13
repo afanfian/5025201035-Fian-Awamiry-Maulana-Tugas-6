@@ -34,6 +34,12 @@ class ChatClient:
                 for w in j[2:]:
                     message="{} {}" . format(message,w)
                 return self.send_group_message(usernamesto,message)
+            #Dalam beda server
+            elif (command=='addrealm'):
+                realmid = j[1].strip()
+                realm_address = j[2].strip()
+                realm_port = j[3].strip()
+                return self.add_realm(realmid, realm_address, realm_port)
             else:
                 return "*Maaf, command tidak benar"
         except IndexError:
@@ -90,8 +96,16 @@ class ChatClient:
             return "message sent to {}" . format(usernames_to)
         else:
             return "Error, {}" . format(result['message'])
-
-
+    # Dalam beda server
+    def add_realm(self, realmid, realm_address, realm_port):
+        if (self.tokenid==""):
+            return "Error, not authorized"
+        string="addrealm {} {} {} \r\n" . format(realmid, realm_address, realm_port)
+        result = self.sendstring(string)
+        if result['status']=='OK':
+            return "Realm {} added" . format(realmid)
+        else:
+            return "Error, {}" . format(result['message'])
 
 if __name__=="__main__":
     cc = ChatClient()
