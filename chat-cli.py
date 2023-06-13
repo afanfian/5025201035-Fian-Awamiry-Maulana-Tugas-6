@@ -16,19 +16,19 @@ class ChatClient:
         j=cmdline.split(" ")
         try:
             command=j[0].strip()
-            if (command=='auth'):
+            if (command=='auth'): # Bisa Jalan
                 username=j[1].strip()
                 password=j[2].strip()
                 return self.login(username,password)
-            elif (command=='send'):
+            elif (command=='send'): # Bisa Jalan
                 usernameto = j[1].strip()
                 message=""
                 for w in j[2:]:
                     message="{} {}" . format(message,w)
                 return self.sendmessage(usernameto,message)
-            elif (command=='inbox'):
+            elif (command=='inbox'): # Bisa Jalan
                 return self.inbox()
-            elif (command=='sendgroup'):
+            elif (command=='sendgroup'): # Bisa Jalan
                 usernamesto = j[1].strip()
                 message=""
                 for w in j[2:]:
