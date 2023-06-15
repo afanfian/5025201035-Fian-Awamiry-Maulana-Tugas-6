@@ -5,6 +5,7 @@ import json
 import logging
 from chat import Chat
 
+
 chatserver = Chat()
 
 class ProcessTheClient(threading.Thread):
@@ -52,8 +53,9 @@ class Server(threading.Thread):
 	
 
 def main():
-	svr = Server()
-	svr.start()
+    print("Server is runninSg...")
+    svr = Server()
+    svr.start()
 
 if __name__=="__main__":
 	main()
